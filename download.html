@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Download Amezon</title>
+
+    <!-- Link to Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS Specific Meta Tags for Full Screen/Under Status Bar -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Amezon">
+    
+    <!-- iOS Icon -->
+    <link rel="apple-touch-icon" href="9w.png">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        /* Android/Desktop Install Button */
+        #installBtn {
+            display: none; /* Hidden by default */
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        #installBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* iOS Instructions */
+        #ios-instructions {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .ios-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .share-icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- App Icon -->
+    <img src="9w.png" alt="Amezon App" class="app-icon">
+
+    <h1>Amezon</h1>
+    <p>Install the official app for the full screen experience.</p>
+
+    <!-- Button for Android/Desktop -->
+    <button id="installBtn">Install App</button>
+
+    <!-- Instructions for iOS -->
+    <div id="ios-instructions">
+        <div class="ios-step">
+            1. Tap the <strong>Share</strong> button <svg class="share-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+        </div>
+        <div class="ios-step">
+            2. Scroll down and tap <strong>"Add to Home Screen"</strong>
+        </div>
+        <div class="ios-step">
+            3. Tap <strong>Add</strong> at the top right.
+        </div>
+    </div>
+
+    <script>
+        // 1. REGISTER SERVICE WORKER
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered!', reg))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
+
+        // 2. IOS REDIRECT LOGIC
+        // If this page is opened from the Home Screen (Standalone), redirect to index.html
+        if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
+            window.location.replace("./index.html");
+        }
+
+        // 3. DETECT DEVICE AND SHOW RELEVANT UI
+        const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        const iosInstructions = document.getElementById('ios-instructions');
+        const installBtn = document.getElementById('installBtn');
+
+        let deferredPrompt;
+
+        if (isIos && !window.navigator.standalone) {
+            // Show iOS instructions
+            iosInstructions.style.display = 'block';
+            installBtn.style.display = 'none';
+        } else {
+            // Logic for Android/Desktop
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block'; // Show button
+                iosInstructions.style.display = 'none';
+
+                installBtn.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted install');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>

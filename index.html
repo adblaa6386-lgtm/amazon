@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Amazon Mobile</title>
+    <title>Amazon</title>
+
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- IOS FULL SCREEN & STATUS BAR CONFIGURATION -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Amezon">
+    <link rel="apple-touch-icon" href="9w.png">
+
     <style>
         /* --- Global & Page Styles --- */
         :root {
@@ -42,7 +52,12 @@
             color: #0F1111;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            overscroll-behavior-y: none; 
+            overscroll-behavior-y: none;
+            
+            /* PWA Full Screen Safe Area Adjustments */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            min-height: 100vh;
         }
 
         a { text-decoration: none; color: inherit; }
@@ -241,8 +256,18 @@
             position: fixed; left: 0; right: 0; width: 100%; 
             z-index: 2002; 
         }
-        .fixed-header { top: 0; background-color: #ffffff; }
-        .fixed-footer { bottom: 0; cursor: pointer; z-index: 1000; }
+        .fixed-header { 
+            top: 0; 
+            background-color: #ffffff;
+            /* Adjust header to sit under status bar */
+            padding-top: env(safe-area-inset-top); 
+        }
+        .fixed-footer { 
+            bottom: 0; 
+            cursor: pointer; 
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
         
         .fixed-header img, .fixed-footer img, img.full-width-image, .full-width-image img {
             width: 100%; height: auto; display: block;
@@ -3800,6 +3825,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }, 2000); 
 
+    // --- SERVICE WORKER REGISTRATION (REQUIRED FOR PWA) ---
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW registered!', reg))
+            .catch(err => console.log('SW failed', err));
+    }
 });
 </script>
 </body>

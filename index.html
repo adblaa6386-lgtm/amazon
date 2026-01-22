@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Amazon</title>
+    <title>Amezon</title>
 
     <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
@@ -54,9 +54,7 @@
             overflow-x: hidden;
             overscroll-behavior-y: none;
             
-            /* PWA Full Screen Safe Area Adjustments */
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            /* FIXED: Removed Safe Area padding so content/background fills screen fully */
             min-height: 100vh;
         }
 
@@ -259,14 +257,15 @@
         .fixed-header { 
             top: 0; 
             background-color: #ffffff;
-            /* Adjust header to sit under status bar */
-            padding-top: env(safe-area-inset-top); 
+            /* FIXED: Removed padding-top env so header sits BEHIND status bar */
+            padding-top: 0; 
         }
         .fixed-footer { 
             bottom: 0; 
             cursor: pointer; 
             z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
+            /* FIXED: Removed padding-bottom env so footer sits BEHIND home bar */
+            padding-bottom: 0;
         }
         
         .fixed-header img, .fixed-footer img, img.full-width-image, .full-width-image img {

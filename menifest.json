@@ -1,0 +1,21 @@
+{
+  "name": "Amazon",
+  "short_name": "Amezon",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "9w.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "9w.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
